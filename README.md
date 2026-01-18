@@ -59,8 +59,8 @@ Proves the fix works with pagination across multiple pages - `v1.0.0` at positio
 
 | Workflow | Action Version | Status | Explanation |
 |----------|----------------|--------|-------------|
-| Test 150 Tags - IETF | `ietf-tools/semver-action@v1` | ❌ FAIL | Only fetches 10 tags, misses `v1.0.0` at position 150 |
-| Test 150 Tags - Fork | `hughesjs/semver-action@remove-100-tag-limit` | ✅ PASS | Paginates through 100 + 50 tags to find `v1.0.0` |
+| [Test 150 Tags - IETF](https://github.com/hughesjs/semver-action-test/actions/runs/21120727881) | `ietf-tools/semver-action@v1` | ❌ FAIL | Only fetches 10 tags, misses `v1.0.0` at position 150 |
+| [Test 150 Tags - Fork](https://github.com/hughesjs/semver-action-test/actions/runs/21120728266) | `hughesjs/semver-action@remove-100-tag-limit` | ✅ PASS | Paginates through 100 + 50 tags to find `v1.0.0` |
 
 ### Expected Output
 
