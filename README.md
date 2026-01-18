@@ -1,8 +1,8 @@
 # semver-action-test
 
-Test repository demonstrating the pagination bug in [ietf-tools/semver-action](https://github.com/ietf-tools/semver-action).
+Test repository demonstrating the pagination issue in [ietf-tools/semver-action](https://github.com/ietf-tools/semver-action).
 
-## The Bug
+## The Issue
 
 When `maxTagsToFetch` is set to a value greater than 100, the action silently resets it to **10**:
 
@@ -18,7 +18,7 @@ This means:
 
 ## Test Methodology
 
-This repository uses **12 annotated tags with controlled tagger dates** to reliably demonstrate the bug:
+This repository uses **12 annotated tags with controlled tagger dates** to reliably demonstrate the issue:
 
 ```
 Position in API response:
