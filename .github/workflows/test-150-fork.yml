@@ -1,0 +1,23 @@
+name: Test 150 Tags - Fork Version (Expected to Pass)
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Get next version
+        id: semver
+        uses: hughesjs/semver-action@remove-100-tag-limit
+        with:
+          token: ${{ github.token }}
+          branch: master
+          maxTagsToFetch: 150
+          skipInvalidTags: true
+      - name: Show result
+        run: |
+          echo "Current: ${{ steps.semver.outputs.current }}"
+          echo "Next: ${{ steps.semver.outputs.next }}"

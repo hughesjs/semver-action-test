@@ -1,0 +1,23 @@
+name: Test 150 Tags - IETF Version (Expected to Fail)
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Get next version
+        id: semver
+        uses: ietf-tools/semver-action@v1
+        with:
+          token: ${{ github.token }}
+          branch: master
+          maxTagsToFetch: 150
+          skipInvalidTags: true
+      - name: Show result
+        run: |
+          echo "Current: ${{ steps.semver.outputs.current }}"
+          echo "Next: ${{ steps.semver.outputs.next }}"

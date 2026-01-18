@@ -18,42 +18,58 @@ This means:
 
 ## Test Methodology
 
-This repository uses **12 annotated tags with controlled tagger dates** to reliably demonstrate the issue:
+This repository uses **150 annotated tags with controlled tagger dates** to reliably demonstrate the issue:
+
+- **149 `build-*` tags** (build-1 through build-149) with incrementing tagger dates
+- **1 `v1.0.0` tag** with the oldest tagger date
 
 ```
 Position in API response:
 ┌─────────────────────────────────────────────┐
-│  1. build-11  (newest tagger date)          │
-│  2. build-10                                │
-│  3. build-9                                 │
-│  4. build-8                                 │
-│  5. build-7                                 │
-│  6. build-6                                 │  ← IETF version only
-│  7. build-5                                 │    sees these 10 tags
-│  8. build-4                                 │
-│  9. build-3                                 │
-│ 10. build-2                                 │
+│   1. build-149  (newest tagger date)        │
+│   2. build-148                              │
+│   ...                                       │
+│  10. build-140                              │  ← IETF version stops here
 ├─────────────────────────────────────────────┤
-│ 11. build-1                                 │  ← Fork version
-│ 12. v1.0.0   (oldest tagger date)           │    paginates to find this
+│  11. build-139                              │
+│  ...                                        │
+│ 100. build-50                               │  ← End of page 1
+├─────────────────────────────────────────────┤
+│ 101. build-49                               │  ← Start of page 2
+│  ...                                        │
+│ 149. build-1                                │
+│ 150. v1.0.0   (oldest tagger date)          │  ← Fork finds this!
 └─────────────────────────────────────────────┘
 ```
 
-**Why annotated tags?** Git's GraphQL API sorts tags by tagger date for annotated tags, giving us precise control over ordering. The `build-*` tags have newer tagger dates than `v1.0.0`, pushing the valid semver tag beyond position 10.
+**Why annotated tags?** Git's GraphQL API sorts tags by tagger date for annotated tags, giving us precise control over ordering. The `build-*` tags have newer tagger dates than `v1.0.0`, pushing the valid semver tag to position 150.
 
-## Results
+## Test Cases
+
+### Test Case 1: Basic (12 tags)
+Demonstrates the issue with minimal tags - `v1.0.0` at position 12.
 
 | Workflow | Action Version | Status | Explanation |
 |----------|----------------|--------|-------------|
 | [Test IETF Version](https://github.com/hughesjs/semver-action-test/actions/runs/21120279507) | `ietf-tools/semver-action@v1` | ❌ FAIL | `maxTagsToFetch: 150` resets to 10, misses `v1.0.0` |
-| [Test Fork Version](https://github.com/hughesjs/semver-action-test/actions/runs/21120279871) | `hughesjs/semver-action@remove-100-tag-limit` | ✅ PASS | Pagination finds `v1.0.0` at position 12 |
+| [Test Fork Version](https://github.com/hughesjs/semver-action-test/actions/runs/21120279871) | `hughesjs/semver-action@remove-100-tag-limit` | ✅ PASS | Finds `v1.0.0` at position 12 |
 
-### IETF Version Output
+### Test Case 2: Full Pagination (150 tags)
+Proves the fix works with pagination across multiple pages - `v1.0.0` at position 150.
+
+| Workflow | Action Version | Status | Explanation |
+|----------|----------------|--------|-------------|
+| Test 150 Tags - IETF | `ietf-tools/semver-action@v1` | ❌ FAIL | Only fetches 10 tags, misses `v1.0.0` at position 150 |
+| Test 150 Tags - Fork | `hughesjs/semver-action@remove-100-tag-limit` | ✅ PASS | Paginates through 100 + 50 tags to find `v1.0.0` |
+
+### Expected Output
+
+**IETF Version (fails):**
 ```
 None of the 10 latest tags are valid semver!
 ```
 
-### Fork Version Output
+**Fork Version (passes):**
 ```
 Current: v1.0.0
 Next: v1.0.1
